@@ -14,6 +14,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/dish")
+@CrossOrigin
 public class DishController {
     private final DishService dishService;
 
@@ -47,7 +48,7 @@ public class DishController {
         }
     }
 
-    @PostMapping()
+    @PostMapping(consumes = "application/json")
     public ResponseEntity<HttpStatus> createDish(@RequestBody Dish dish) {
         try {
             dishService.createDish(
