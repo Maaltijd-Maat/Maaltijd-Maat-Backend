@@ -17,7 +17,7 @@ public class User {
 
     @Id
     @Getter
-    private ObjectId id;
+    private String id;
     private String firstname;
     private String lastname;
     private String email;

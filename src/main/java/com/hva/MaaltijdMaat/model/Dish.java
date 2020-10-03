@@ -17,7 +17,7 @@ public class Dish {
 
     @Id
     @Getter
-    private ObjectId id;
+    private String id;
 
     @Getter
     @Setter
