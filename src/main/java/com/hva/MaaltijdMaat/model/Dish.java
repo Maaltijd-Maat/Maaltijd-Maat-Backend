@@ -1,6 +1,5 @@
 package com.hva.MaaltijdMaat.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +23,7 @@ public class Dish {
     @Setter
     private String name;
 
-    @DBRef
+    @DBRef(db = "user")
     @Getter
     private User author;
 
