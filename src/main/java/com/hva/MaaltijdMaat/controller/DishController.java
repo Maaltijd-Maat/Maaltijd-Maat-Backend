@@ -28,17 +28,14 @@ public class DishController {
         try {
             Optional<Dish> dish = dishService.findDish(id);
 
-            if (dish.isPresent()) {
-                return new ResponseEntity<>(dish.get(), HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return dish.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<Dish>> getDishes() {
         try {
             List<Dish> dishes = dishService.getAllDishes();
@@ -51,15 +48,7 @@ public class DishController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<HttpStatus> createDish(@RequestBody Dish dish) {
         try {
-            dishService.createDish(
-                    new Dish(
-                            dish.getName(),
-                            dish.getUser(),
-                            dish.getAmountOfPeople(),
-                            dish.getInstructions(),
-                            dish.getIngredients()
-                    ));
-
+            dishService.createDish(dish);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

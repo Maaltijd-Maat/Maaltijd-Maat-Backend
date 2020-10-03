@@ -1,6 +1,10 @@
 package com.hva.MaaltijdMaat.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 
 import org.springframework.data.annotation.Id;
@@ -8,74 +12,31 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
+@NoArgsConstructor
 @AllArgsConstructor
 public class Dish {
 
     @Id
+    @Getter
     private ObjectId id;
 
+    @Getter
+    @Setter
     private String name;
 
     @DBRef
-    private User user;
+    @Getter
+    private User author;
 
+    @Getter
+    @Setter
     private int amountOfPeople;
 
+    @Getter
+    @Setter
     private String[] instructions;
 
+    @Getter
+    @Setter
     private Ingredient[] ingredients;
-
-    public Dish() {}
-
-    public Dish(String name, User user, int amountOfPeople, String[] instructions, Ingredient[] ingredients) {
-        this.name = name;
-        this.user = user;
-        this.amountOfPeople = amountOfPeople;
-        this.instructions = instructions;
-        this.ingredients = ingredients;
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public int getAmountOfPeople() {
-        return amountOfPeople;
-    }
-
-    public void setAmountOfPeople(int amountOfPeople) {
-        this.amountOfPeople = amountOfPeople;
-    }
-
-    public String[] getInstructions() {
-        return instructions;
-    }
-
-    public void setInstructions(String[] instructions) {
-        this.instructions = instructions;
-    }
-
-    public Ingredient[] getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(Ingredient[] ingredients) {
-        this.ingredients = ingredients;
-    }
 }
