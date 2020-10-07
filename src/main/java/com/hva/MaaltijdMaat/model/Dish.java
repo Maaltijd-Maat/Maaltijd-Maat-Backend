@@ -1,16 +1,12 @@
 package com.hva.MaaltijdMaat.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.bson.types.ObjectId;
-
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Dish {
@@ -20,7 +16,6 @@ public class Dish {
     private String id;
 
     @Getter
-    @Setter
     private String name;
 
     @DBRef(db = "user")
@@ -28,14 +23,11 @@ public class Dish {
     private User author;
 
     @Getter
-    @Setter
     private int amountOfPeople;
 
     @Getter
-    @Setter
     private String[] instructions;
 
     @Getter
-    @Setter
     private Ingredient[] ingredients;
 }
