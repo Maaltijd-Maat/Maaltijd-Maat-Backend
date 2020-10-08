@@ -26,8 +26,6 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void registerUser(User user) {
-        String password = user.getPassword();
-        user.setPassword(passwordEncoder.encode(password));
         this.userRepository.save(user);
     }
 
