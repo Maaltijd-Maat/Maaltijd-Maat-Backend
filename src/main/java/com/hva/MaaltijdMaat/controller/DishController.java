@@ -2,14 +2,13 @@ package com.hva.MaaltijdMaat.controller;
 
 import com.hva.MaaltijdMaat.model.Dish;
 import com.hva.MaaltijdMaat.service.DishService;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -48,7 +47,14 @@ public class DishController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<HttpStatus> createDish(@RequestBody Dish dish) {
         try {
-            dishService.createDish(dish);
+            Dish _dish = Dish.builder()
+                    .name(dish.getName())
+                    .amountOfPeople(dish.getAmountOfPeople())
+                    .ingredients(dish.getIngredients())
+                    .instructions(dish.getInstructions())
+                    .build();
+
+            dishService.createDish(_dish);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -61,11 +67,12 @@ public class DishController {
             Optional<Dish> dishData = dishService.findDish(id);
 
             if (dishData.isPresent()) {
-                Dish _dish = dishData.get();
-                _dish.setName(dish.getName());
-                _dish.setAmountOfPeople(dish.getAmountOfPeople());
-                _dish.setIngredients(dish.getIngredients());
-                _dish.setInstructions(dish.getInstructions());
+                Dish _dish = Dish.builder()
+                        .name(dish.getName())
+                        .amountOfPeople(dish.getAmountOfPeople())
+                        .ingredients(dish.getIngredients())
+                        .instructions(dish.getInstructions())
+                        .build();
 
                 dishService.updateDish(_dish);
                 return new ResponseEntity<>(HttpStatus.OK);

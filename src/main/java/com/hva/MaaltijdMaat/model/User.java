@@ -1,28 +1,38 @@
 package com.hva.MaaltijdMaat.model;
 
 import com.hva.MaaltijdMaat.enums.Allergen;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
 import lombok.Getter;
-import org.bson.types.ObjectId;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Document
-@Data
+@Builder
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
-    @Getter
     private String id;
+
     private String firstname;
+
     private String lastname;
+
+    @Indexed(unique = true)
     private String email;
+
     private String password;
+
     private String avatar;
+
     private boolean guest;
+
     private List<Allergen> Allergenen;
 }
