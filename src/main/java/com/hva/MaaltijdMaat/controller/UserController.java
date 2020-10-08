@@ -23,7 +23,17 @@ public class UserController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<?> registerUser(@RequestBody User user){
         try{
-            userService.registerUser(user);
+            User _user = User.builder()
+                    .firstname(user.getFirstname())
+                    .lastname(user.getLastname())
+                    .email(user.getEmail())
+                    .password(user.getPassword())
+                    .Allergenen(user.getAllergenen())
+                    .avatar(user.getAvatar())
+                    .guest(user.isGuest())
+                    .build();
+
+            userService.registerUser(_user);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
