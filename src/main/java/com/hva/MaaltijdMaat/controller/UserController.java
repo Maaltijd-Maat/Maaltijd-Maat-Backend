@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -20,6 +21,9 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping(consumes = "application/json")
     public ResponseEntity<?> registerUser(@RequestBody User user){
         try{
@@ -27,7 +31,7 @@ public class UserController {
                     .firstname(user.getFirstname())
                     .lastname(user.getLastname())
                     .email(user.getEmail())
-                    .password(user.getPassword())
+                    .password(passwordEncoder.encode(user.getPassword()))
                     .Allergenen(user.getAllergenen())
                     .avatar(user.getAvatar())
                     .guest(user.isGuest())
