@@ -1,7 +1,9 @@
 package com.hva.MaaltijdMaat.controller;
 
+import com.hva.MaaltijdMaat.model.Dish;
 import com.hva.MaaltijdMaat.model.User;
 import com.hva.MaaltijdMaat.service.UserService;
+import com.hva.MaaltijdMaat.util.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,9 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
     @PostMapping(consumes = "application/json")
     public ResponseEntity<?> registerUser(@RequestBody User user){
         try{
@@ -42,5 +47,23 @@ public class UserController {
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping(path = "/information")
+    public ResponseEntity<?> getUserInformation(@RequestHeader(name = "Authorization") String token){
+        String jwtToken = jwtTokenUtil.refactorToken(token);
+        User retrievedLogin = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+        if (retrievedLogin == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User responseUser = User.builder()
+                .id(retrievedLogin.getId())
+                .firstname(retrievedLogin.getFirstname())
+                .lastname(retrievedLogin.getLastname())
+                .email(retrievedLogin.getEmail())
+                .avatar(retrievedLogin.getAvatar())
+                .guest(retrievedLogin.isGuest())
+                .Allergenen(retrievedLogin.getAllergenen())
+                .build();
+
+        return new ResponseEntity<>(responseUser, HttpStatus.OK);
     }
 }

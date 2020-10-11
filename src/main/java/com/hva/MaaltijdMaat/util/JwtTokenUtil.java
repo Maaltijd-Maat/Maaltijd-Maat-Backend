@@ -21,8 +21,8 @@ import java.util.function.Function;
 public class JwtTokenUtil implements Serializable {
     private static final long serialVersionUID = -2550185165626007488L;
 
-    @Value("${jwt.valid}")
-    public static long JWT_TOKEN_VALIDITY;
+    //@Value("${jwt.valid}")
+    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -77,7 +77,8 @@ public class JwtTokenUtil implements Serializable {
         String jwtToken = null;
         if (token != null && token.startsWith("Bearer ")){
             jwtToken = token.substring(7);
+            return jwtToken;
         }
-        return jwtToken;
+        return token;
     }
 }
