@@ -18,6 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Class that is executed once per request.
+ * It will check if the token is in the request and it will check for validity.
+ */
 @Component
 public class RequestFilter extends OncePerRequestFilter {
     @Autowired

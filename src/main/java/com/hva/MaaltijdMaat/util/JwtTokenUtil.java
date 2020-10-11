@@ -14,10 +14,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Utility class that validates, generates and assign roles and information for the JWT token
+ */
 @Component
 public class JwtTokenUtil implements Serializable {
     private static final long serialVersionUID = -2550185165626007488L;
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+
+    @Value("${jwt.valid}")
+    public static long JWT_TOKEN_VALIDITY;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -61,13 +66,14 @@ public class JwtTokenUtil implements Serializable {
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
+    //Check if token is valid.
     public Boolean validateToken(String token, User user){
         final String username = getUsernameFromToken(token);
         return (username.equals(user.getEmail()) && !isTokenExpired(token));
     }
 
+    //Remove the Bearer word from the JWT
     public String refactorToken(String token){
-        //Remove the Bearer word from the JWT
         String jwtToken = null;
         if (token != null && token.startsWith("Bearer ")){
             jwtToken = token.substring(7);
