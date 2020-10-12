@@ -35,7 +35,6 @@ public class RequestFilter extends OncePerRequestFilter {
         final String requestTokenHeader = request.getHeader("Authorization");
         String email = null;
         String jwtToken = jwtTokenUtil.refactorToken(requestTokenHeader);
-        System.out.println(jwtToken);
         try {
             if (jwtToken != null) email = jwtTokenUtil.getUsernameFromToken(jwtToken);
         }catch (IllegalArgumentException e){

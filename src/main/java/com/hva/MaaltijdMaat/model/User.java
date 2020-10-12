@@ -37,7 +37,7 @@ public class User implements UserDetails {
 
     private boolean guest;
 
-    private List<Allergen> Allergenen;
+    private String[] Allergenen;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -46,7 +46,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return null;
+        return email;
     }
 
     @Override

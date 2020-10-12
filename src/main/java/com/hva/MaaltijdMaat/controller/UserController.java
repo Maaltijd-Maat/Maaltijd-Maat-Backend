@@ -1,6 +1,5 @@
 package com.hva.MaaltijdMaat.controller;
 
-import com.hva.MaaltijdMaat.model.Dish;
 import com.hva.MaaltijdMaat.model.User;
 import com.hva.MaaltijdMaat.service.UserService;
 import com.hva.MaaltijdMaat.util.JwtTokenUtil;
@@ -40,6 +39,7 @@ public class UserController {
                     .Allergenen(user.getAllergenen())
                     .avatar(user.getAvatar())
                     .guest(user.isGuest())
+                    .Allergenen(user.getAllergenen())
                     .build();
 
             userService.registerUser(_user);
