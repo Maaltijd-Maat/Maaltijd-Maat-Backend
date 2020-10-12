@@ -1,6 +1,5 @@
 package com.hva.MaaltijdMaat.model;
 
-import com.hva.MaaltijdMaat.enums.Allergen;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
@@ -10,9 +9,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
-import java.util.List;
 
 @Document
 @Builder
