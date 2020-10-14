@@ -45,7 +45,7 @@ public class RequestFilter extends OncePerRequestFilter {
 
         //Validation
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = (UserDetails) this.userService.getUserInformation(email);
+            UserDetails userDetails = this.userService.getUserInformation(email);
             if (jwtTokenUtil.validateToken(jwtToken, (User) userDetails)){
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
