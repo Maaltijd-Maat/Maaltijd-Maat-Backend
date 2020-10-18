@@ -64,4 +64,14 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return guest;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof User){
+            User toCompare = (User) o;
+            return this.email.equals(toCompare.email);
+        }
+
+        return false;
+    }
 }
