@@ -126,9 +126,9 @@ public class UserController {
         PasswordResetToken tokenObject = PasswordResetToken.builder()
                 .token(credentials.getEmail())
                 .build();
-
         //Check if token is valid and not expired.
-        if(passwordTokenUtil.validatePasswordResetToken(tokenObject.getToken()).equals("valid")){
+        String response = passwordTokenUtil.validatePasswordResetToken(tokenObject.getToken());
+        if(response.equals("valid")){
             //Check if user exists by passwordResetToken
             User retrievedUser = userService.getUserByPasswordResetToken(tokenObject.getToken());
             //Return not found http status if user is not found.
@@ -149,7 +149,11 @@ public class UserController {
             //Delete all tokens from user and all token that are expired.
             userService.deleteUserPasswordTokens(user);
             return new ResponseEntity<>(HttpStatus.OK);
+        }else if(response.equals("expired")){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+
     }
 }
