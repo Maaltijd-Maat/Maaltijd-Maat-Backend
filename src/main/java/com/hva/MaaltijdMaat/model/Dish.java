@@ -20,7 +20,7 @@ public class Dish {
 
     private String name;
 
-    @DBRef(db = "user")
+    @DBRef
     private User author;
 
     private int amountOfPeople;

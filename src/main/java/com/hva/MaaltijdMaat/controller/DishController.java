@@ -68,6 +68,7 @@ public class DishController {
 
             if (dishData.isPresent()) {
                 Dish _dish = Dish.builder()
+                        .id(id)
                         .name(dish.getName())
                         .amountOfPeople(dish.getAmountOfPeople())
                         .ingredients(dish.getIngredients())

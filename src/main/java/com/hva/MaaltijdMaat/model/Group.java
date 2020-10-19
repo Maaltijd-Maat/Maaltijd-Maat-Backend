@@ -12,6 +12,7 @@ import java.util.List;
 @Document
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Group {
@@ -21,9 +22,9 @@ public class Group {
 
     private String name;
 
-    @DBRef(db = "user")
+    @DBRef
     private User owner;
 
-    @DBRef(db = "user")
+    @DBRef
     private List<User> members = new ArrayList<>();
 }

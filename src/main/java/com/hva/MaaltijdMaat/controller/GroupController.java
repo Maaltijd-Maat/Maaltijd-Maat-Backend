@@ -34,12 +34,16 @@ public class GroupController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Group> getGroup(@PathVariable("id") String groupId) {
+    public ResponseEntity<Group> getGroup(
+            @RequestHeader(name = "Authorization") String token,
+            @PathVariable("id") String groupId) {
         try {
-            Optional<Group> _group = this.groupService.findGroup(groupId);
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+            String userId = user.getId();
 
-            return _group.map(group -> new ResponseEntity<>(group, HttpStatus.OK))
-                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            Group group = this.groupService.findGroup(groupId, userId);
+            return new ResponseEntity<>(group, HttpStatus.OK);
         } catch(Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -59,7 +63,7 @@ public class GroupController {
     }
 
     @PostMapping(consumes = "text/plain")
-    public ResponseEntity<HttpStatus> createGroup(@RequestHeader(name = "Authorization") String token, @RequestBody String groupName) {
+    public ResponseEntity<Group> createGroup(@RequestHeader(name = "Authorization") String token, @RequestBody String groupName) {
         try {
             String jwtToken = jwtTokenUtil.refactorToken(token);
             User creator = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
@@ -73,12 +77,48 @@ public class GroupController {
                     .members(members)
                     .build();
 
-            groupService.createGroup(_group);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>(groupService.createGroup(_group), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
+    @PutMapping("/{groupId}")
+    public ResponseEntity<HttpStatus> updateGroup(@RequestHeader(name = "Authorization") String token,
+                                                  @PathVariable String groupId,
+                                                  @RequestBody Group group) {
+        try {
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+            String userId = user.getId();
 
+            if (groupService.isUserMemberOfGroup(groupId, userId)) {
+                groupService.updateGroup(groupId, group);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/{groupId}")
+    public ResponseEntity<HttpStatus> deleteGroup(@RequestHeader(name = "Authorization") String token,
+                                                  @PathVariable String groupId) {
+        try {
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+            String userId = user.getId();
+
+            if (groupService.isUserMemberOfGroup(groupId, userId)) {
+                groupService.deleteGroup(groupId);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
