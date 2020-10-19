@@ -54,7 +54,7 @@ public class GroupController {
             String jwtToken = jwtTokenUtil.refactorToken(token);
             User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
 
-            List<Group> groups = groupService.findGroupsByUser(user.getId());
+            List<Group> groups = groupService.findGroups(user.getId());
             return new ResponseEntity<>(groups, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
