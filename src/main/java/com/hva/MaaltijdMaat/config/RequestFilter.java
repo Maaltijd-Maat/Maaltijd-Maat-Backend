@@ -46,12 +46,16 @@ public class RequestFilter extends OncePerRequestFilter {
         //Validation
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails = this.userService.getUserInformation(email);
-            if (jwtTokenUtil.validateToken(jwtToken, (User) userDetails)){
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            try {
+                if (jwtTokenUtil.validateToken(jwtToken, (User) userDetails)){
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
+            } catch (NullPointerException e) {
+                System.out.println("User doesn't exist anymore");
             }
         }
         filterChain.doFilter(request, httpServletResponse);
