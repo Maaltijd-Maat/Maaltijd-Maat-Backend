@@ -1,18 +1,23 @@
 package com.hva.MaaltijdMaat.service;
 
+import com.hva.MaaltijdMaat.model.Invite;
 import com.hva.MaaltijdMaat.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+import java.util.StringJoiner;
+
 /**
  * Class for all different email templates.
  */
 @Component
 public class EmailService {
+    private final JavaMailSender emailSender;
+
     @Autowired
-    private JavaMailSender emailSender;
+    public EmailService(JavaMailSender emailSender) {this.emailSender = emailSender;}
 
     /**
      * Default email template for sending short messages with parameters.
@@ -41,6 +46,24 @@ public class EmailService {
         email.setSubject("Reset Password");
         email.setText(message + " \r\n" + url);
         email.setTo(user.getEmail());
+        email.setFrom("noreply@maaltijdmaat.com");
+        emailSender.send(email);
+    }
+
+    /**
+     * Group invitation email template
+     */
+    public void constructGroupInvitationEmail(Invite invite) {
+        String url = "http://localhost:4200/groups/invite/" + invite.getId();
+        String message = String.format("%s invited you to join '%s'. Follow %s to accept the invitation.",
+                invite.getInviter().getFirstname(),
+                invite.getGroup().getName(),
+                url);
+
+        SimpleMailMessage email = new SimpleMailMessage();
+        email.setSubject("Invitation to " + invite.getGroup().getName());
+        email.setText(message);
+        email.setTo(invite.getInvitee().getEmail());
         email.setFrom("noreply@maaltijdmaat.com");
         emailSender.send(email);
     }
