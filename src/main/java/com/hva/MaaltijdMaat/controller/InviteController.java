@@ -63,7 +63,7 @@ public class InviteController {
                     .build();
 
             invite = inviteService.createNewInvite(invite);
-            // emailService.constructGroupInvitationEmail(invite);
+            emailService.constructGroupInvitationEmail(invite);
 
             return new ResponseEntity<>(invite, HttpStatus.OK);
         } catch (Exception e) {
