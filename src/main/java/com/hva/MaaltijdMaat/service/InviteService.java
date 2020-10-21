@@ -3,8 +3,11 @@ package com.hva.MaaltijdMaat.service;
 import com.hva.MaaltijdMaat.model.Invite;
 import com.hva.MaaltijdMaat.repository.InviteRepository;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,5 +28,16 @@ public class InviteService {
      */
     public Invite createNewInvite(Invite invite) {
         return inviteRepository.insert(invite);
+    }
+
+    public Invite findInvite(String inviteId, String inviteeId) {
+        Query query = new Query(Criteria
+                .where("_id")
+                .is(new ObjectId(inviteId))
+                .and("invitee.$id")
+                .is(new ObjectId(inviteeId))
+        );
+
+        return mongoTemplate.findOne(query, Invite.class);
     }
 }

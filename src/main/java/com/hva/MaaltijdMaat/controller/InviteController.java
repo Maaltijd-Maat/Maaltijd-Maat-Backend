@@ -63,8 +63,22 @@ public class InviteController {
                     .build();
 
             invite = inviteService.createNewInvite(invite);
-            emailService.constructGroupInvitationEmail(invite);
+            // emailService.constructGroupInvitationEmail(invite);
 
+            return new ResponseEntity<>(invite, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Invite> getInvite(@RequestHeader(name = "Authorization") String token,
+                                            @PathVariable("id") String inviteId) {
+        try {
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User invitee = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            Invite invite = inviteService.findInvite(inviteId, invitee.getId());
             return new ResponseEntity<>(invite, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
