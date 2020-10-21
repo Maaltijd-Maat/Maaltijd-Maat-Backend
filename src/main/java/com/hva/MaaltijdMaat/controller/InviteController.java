@@ -97,10 +97,30 @@ public class InviteController {
             // Check if the accepter is the invitee
             if (invitee.equals(invite.getInvitee())) {
                 groupService.addMember(invite.getGroup().getId(), invitee);
+
+                // Remove invite
+                inviteService.deleteInvite(inviteId);
             }
 
-            // Remove invite
-            inviteService.deleteInvite(inviteId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/{id}/decline")
+    public ResponseEntity<Invite> declineInvite(@RequestHeader(name = "Authorization") String token,
+                                               @PathVariable("id") String inviteId) {
+        try {
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User invitee = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            Invite invite = inviteService.findInvite(inviteId, invitee.getId());
+
+            // Check if the decliner is the invitee
+            if (invitee.equals(invite.getInvitee())) {
+                inviteService.deleteInvite(inviteId);
+            }
 
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
