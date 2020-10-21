@@ -30,5 +30,5 @@ public class Invite {
 
     @Field
     @Indexed(name="expireIndex", expireAfterSeconds=604800)
-    private Date expireDate;
+    private Date creationDate;
 }

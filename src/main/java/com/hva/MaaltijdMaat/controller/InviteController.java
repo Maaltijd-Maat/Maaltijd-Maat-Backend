@@ -62,7 +62,7 @@ public class InviteController {
                     .group(group)
                     .invitee(invitee)
                     .inviter(inviter)
-                    .expireDate(new Date())
+                    .creationDate(new Date())
                     .build();
 
             invite = inviteService.createNewInvite(invite);
