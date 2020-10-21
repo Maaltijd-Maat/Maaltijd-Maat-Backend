@@ -84,4 +84,27 @@ public class InviteController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/{id}/accept")
+    public ResponseEntity<Invite> acceptInvite(@RequestHeader(name = "Authorization") String token,
+                                               @PathVariable("id") String inviteId) {
+        try {
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User invitee = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            Invite invite = inviteService.findInvite(inviteId, invitee.getId());
+
+            // Check if the accepter is the invitee
+            if (invitee.equals(invite.getInvitee())) {
+                groupService.addMember(invite.getGroup().getId(), invitee);
+            }
+
+            // Remove invite
+            inviteService.deleteInvite(inviteId);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

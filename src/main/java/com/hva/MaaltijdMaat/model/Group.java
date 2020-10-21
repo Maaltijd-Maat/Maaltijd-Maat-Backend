@@ -27,4 +27,18 @@ public class Group {
 
     @DBRef
     private List<User> members = new ArrayList<>();
+
+    /**
+     * Adds a new member to the list of members if the member is not already a member of the group.
+     * @param newMember new member to be added
+     * @return true if member is added; false if member is not added
+     */
+    public boolean addMember(User newMember) {
+        if (!members.contains(newMember)) {
+            members.add(newMember);
+            return true;
+        }
+
+        return false;
+    }
 }

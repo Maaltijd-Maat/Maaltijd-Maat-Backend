@@ -40,4 +40,12 @@ public class InviteService {
 
         return mongoTemplate.findOne(query, Invite.class);
     }
+
+    /**
+     * Deletes specified invite from the database.
+     * @param inviteId id of the invite
+     */
+    public void deleteInvite(String inviteId) {
+        inviteRepository.deleteById(inviteId);
+    }
 }
