@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 @Slf4j
 @CrossOrigin
 @RestController
@@ -60,6 +62,7 @@ public class InviteController {
                     .group(group)
                     .invitee(invitee)
                     .inviter(inviter)
+                    .expireDate(new Date())
                     .build();
 
             invite = inviteService.createNewInvite(invite);
