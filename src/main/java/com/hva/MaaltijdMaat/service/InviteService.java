@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class InviteService {
@@ -30,6 +31,13 @@ public class InviteService {
         return inviteRepository.insert(invite);
     }
 
+    /**
+     * Find invite by id and invitee id.
+     * @param inviteId ID of invite
+     * @param inviteeId ID of invitee
+     * @return Invite
+     */
+    @Transactional
     public Invite findInvite(String inviteId, String inviteeId) {
         Query query = new Query(Criteria
                 .where("_id")
