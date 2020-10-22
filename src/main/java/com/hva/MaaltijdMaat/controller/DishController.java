@@ -44,9 +44,12 @@ public class DishController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Dish>> getDishes() {
+    public ResponseEntity<List<Dish>> getDishes(@RequestHeader(name = "Authorization") String token) {
         try {
-            List<Dish> dishes = dishService.getAllDishes();
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            List<Dish> dishes = dishService.getUserDishes(user.getId());
             return new ResponseEntity<>(dishes, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

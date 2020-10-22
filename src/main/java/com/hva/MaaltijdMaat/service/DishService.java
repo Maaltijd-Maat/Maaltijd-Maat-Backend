@@ -17,8 +17,8 @@ public class DishService {
         this.dishRepository = dishRepository;
     }
 
-    public List<Dish> getAllDishes() {
-        return dishRepository.findAll();
+    public List<Dish> getUserDishes(String userId) {
+        return dishRepository.findDishesByUser(userId);
     }
 
     public Optional<Dish> findDish(String id) {
