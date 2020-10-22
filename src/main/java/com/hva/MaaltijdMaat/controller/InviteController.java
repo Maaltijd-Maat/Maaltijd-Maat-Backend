@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @CrossOrigin
@@ -39,6 +40,19 @@ public class InviteController {
         this.userService = userService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.emailService = emailService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Invite>> getInvites(@RequestHeader(name = "Authorization") String token) {
+        try {
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User invitee = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            List<Invite> invites = inviteService.findInvites(invitee.getId());
+            return new ResponseEntity<>(invites, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping

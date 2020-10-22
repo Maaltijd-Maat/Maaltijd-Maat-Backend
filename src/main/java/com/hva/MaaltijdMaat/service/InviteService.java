@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class InviteService {
     private final MongoTemplate mongoTemplate;
@@ -47,6 +49,20 @@ public class InviteService {
         );
 
         return mongoTemplate.findOne(query, Invite.class);
+    }
+
+    /**
+     * Retrieve all invites for a user.
+     * @param userId id of the user
+     * @return list of invites
+     */
+    public List<Invite> findInvites(String userId) {
+        Query query = new Query(Criteria
+                .where("invitee.$id")
+                .is(new ObjectId(userId))
+        );
+
+        return mongoTemplate.find(query, Invite.class);
     }
 
     /**
