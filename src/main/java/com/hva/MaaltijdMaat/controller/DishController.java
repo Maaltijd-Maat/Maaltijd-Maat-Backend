@@ -1,14 +1,14 @@
 package com.hva.MaaltijdMaat.controller;
 
 import com.hva.MaaltijdMaat.model.Dish;
-import com.hva.MaaltijdMaat.model.User;
 import com.hva.MaaltijdMaat.service.DishService;
+import com.hva.MaaltijdMaat.util.JwtTokenUtil;
+import com.hva.MaaltijdMaat.model.User;
+import com.hva.MaaltijdMaat.service.UserService;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.hva.MaaltijdMaat.service.UserService;
-import com.hva.MaaltijdMaat.util.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,9 +31,31 @@ public class DishController {
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
+    @PostMapping
+    public ResponseEntity<HttpStatus> createDish(@RequestHeader(name = "Authorization") String token,
+                                                 @RequestBody Dish dish) {
+        try {
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            Dish _dish = Dish.builder()
+                    .name(dish.getName())
+                    .author(user)
+                    .amountOfPeople(dish.getAmountOfPeople())
+                    .ingredients(dish.getIngredients())
+                    .instructions(dish.getInstructions())
+                    .build();
+
+            dishService.createDish(_dish);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Dish> getDishByAuthor(@RequestHeader(name = "Authorization") String token,
-                                            @PathVariable("id") String id) {
+                                                @PathVariable("id") String id) {
         try {
             String jwtToken = jwtTokenUtil.refactorToken(token);
             User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
@@ -60,32 +82,10 @@ public class DishController {
         }
     }
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<HttpStatus> createDish(@RequestHeader(name = "Authorization") String token,
-                                                 @RequestBody Dish dish) {
-        try {
-            String jwtToken = jwtTokenUtil.refactorToken(token);
-            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
-
-            Dish _dish = Dish.builder()
-                    .name(dish.getName())
-                    .author(user)
-                    .amountOfPeople(dish.getAmountOfPeople())
-                    .ingredients(dish.getIngredients())
-                    .instructions(dish.getInstructions())
-                    .build();
-
-            dishService.createDish(_dish);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<HttpStatus> updateDish(@RequestHeader(name = "Authorization") String token,
-            @PathVariable String id,
-            @RequestBody Dish dish) {
+                                                 @PathVariable String id,
+                                                 @RequestBody Dish dish) {
         try {
             String jwtToken = jwtTokenUtil.refactorToken(token);
             User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
