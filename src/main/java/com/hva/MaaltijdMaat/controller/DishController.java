@@ -32,9 +32,13 @@ public class DishController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Dish> getDish(@PathVariable("id") String id) {
+    public ResponseEntity<Dish> getDishByAuthor(@RequestHeader(name = "Authorization") String token,
+                                            @PathVariable("id") String id) {
         try {
-            Optional<Dish> dish = dishService.findDish(id);
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            Optional<Dish> dish = dishService.findDishByAuthor(id, user.getId());
 
             return dish.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -44,12 +48,12 @@ public class DishController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Dish>> getDishes(@RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<List<Dish>> getDishesByAuthor(@RequestHeader(name = "Authorization") String token) {
         try {
             String jwtToken = jwtTokenUtil.refactorToken(token);
             User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
 
-            List<Dish> dishes = dishService.getUserDishes(user.getId());
+            List<Dish> dishes = dishService.findDishesByAuthor(user.getId());
             return new ResponseEntity<>(dishes, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -79,9 +83,14 @@ public class DishController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HttpStatus> updateDish(@PathVariable String id, @RequestBody Dish dish) {
+    public ResponseEntity<HttpStatus> updateDish(@RequestHeader(name = "Authorization") String token,
+            @PathVariable String id,
+            @RequestBody Dish dish) {
         try {
-            Optional<Dish> dishData = dishService.findDish(id);
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            Optional<Dish> dishData = dishService.findDishByAuthor(id, user.getId());
 
             if (dishData.isPresent()) {
                 Dish _dish = Dish.builder()
@@ -103,9 +112,13 @@ public class DishController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteDish(@PathVariable String id) {
+    public ResponseEntity<HttpStatus> deleteDish(@RequestHeader(name = "Authorization") String token,
+                                                 @PathVariable String id) {
         try {
-            Optional<Dish> dishData = dishService.findDish(id);
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            Optional<Dish> dishData = dishService.findDishByAuthor(id, user.getId());
 
             if (dishData.isPresent()) {
                 dishService.deleteDish(id);
