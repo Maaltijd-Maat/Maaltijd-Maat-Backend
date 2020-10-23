@@ -17,12 +17,12 @@ public class DishService {
         this.dishRepository = dishRepository;
     }
 
-    public List<Dish> getAllDishes() {
-        return dishRepository.findAll();
+    public List<Dish> findDishesByAuthor(String userId) {
+        return dishRepository.findDishesByAuthor_Id(userId);
     }
 
-    public Optional<Dish> findDish(String id) {
-        return dishRepository.findById(id);
+    public Optional<Dish> findDishByAuthor(String id, String userId) {
+        return dishRepository.findDishByIdAndAuthor_Id(id, userId);
     }
 
     public void createDish(Dish dish) {
