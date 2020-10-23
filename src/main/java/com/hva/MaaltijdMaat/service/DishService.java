@@ -18,11 +18,11 @@ public class DishService {
     }
 
     public List<Dish> findDishesByAuthor(String userId) {
-        return dishRepository.findDishesByAuthor(userId);
+        return dishRepository.findDishesByAuthor_Id(userId);
     }
 
     public Optional<Dish> findDishByAuthor(String id, String userId) {
-        return dishRepository.findDishByAuthor(id, userId);
+        return dishRepository.findDishByIdAndAuthor_Id(id, userId);
     }
 
     public void createDish(Dish dish) {
