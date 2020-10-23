@@ -1,6 +1,7 @@
 package com.hva.MaaltijdMaat.service;
 
 import com.hva.MaaltijdMaat.model.Group;
+import com.hva.MaaltijdMaat.model.User;
 import com.hva.MaaltijdMaat.repository.GroupRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,5 +98,20 @@ public class GroupService {
         );
 
         return mongoTemplate.exists(query, Group.class);
+    }
+    
+    public boolean addMember(String groupId, User user) {
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+
+        if (optionalGroup.isPresent()) {
+            Group group = optionalGroup.get();
+
+            if (group.addMember(user)) {
+                groupRepository.save(group);
+                return true;
+            }
+        }
+
+        return false;
     }
 }
