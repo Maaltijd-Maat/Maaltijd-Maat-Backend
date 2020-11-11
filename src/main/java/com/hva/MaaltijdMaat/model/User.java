@@ -28,13 +28,17 @@ public class User implements UserDetails {
     @Indexed(unique = true)
     private String email;
 
+    private String secondEmail;
+
     private String password;
 
     private String avatar;
 
     private boolean guest;
 
-    private String[] Allergenen;
+    private String[] allergies;
+
+    private String[] diets;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

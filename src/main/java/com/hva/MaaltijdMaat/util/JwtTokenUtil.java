@@ -4,6 +4,7 @@ import com.hva.MaaltijdMaat.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.DefaultClaims;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -43,7 +44,11 @@ public class JwtTokenUtil implements Serializable {
     }
 
     private Claims getAllClaimsFromToken(String token){
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        try{
+            return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        }catch(Exception e){
+            return new DefaultClaims();
+        }
     }
 
     //Check if token expiration date is before today

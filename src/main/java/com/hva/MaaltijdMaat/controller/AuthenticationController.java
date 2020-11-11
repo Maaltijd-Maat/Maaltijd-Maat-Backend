@@ -1,8 +1,10 @@
 package com.hva.MaaltijdMaat.controller;
 
 import com.hva.MaaltijdMaat.model.User;
+import com.hva.MaaltijdMaat.service.UserService;
 import com.hva.MaaltijdMaat.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,6 +18,7 @@ import java.util.Objects;
 
 @CrossOrigin
 @RestController
+@RequestMapping(value = "/authenticate")
 public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -24,15 +27,28 @@ public class AuthenticationController {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private UserDetailsService userService;
+    private UserDetailsService userDetailsService;
 
-    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+    @Autowired
+    private UserService userService;
+
+    @PostMapping
     public ResponseEntity<?> createAuthenticationToken(@RequestBody User login) throws Exception{
         authenticate(login.getEmail(), login.getPassword());
-        final UserDetails userDetails = userService.loadUserByUsername(login.getEmail());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(login.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         return ResponseEntity.ok(token);
+    }
+
+    @GetMapping(value = "/status")
+    public ResponseEntity<?> isTokenValid(@RequestHeader(name = "Authorization") String token){
+        //Remove the word bearer from the token.
+        String jwtToken = jwtTokenUtil.refactorToken(token);
+        User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+        Boolean valid = jwtTokenUtil.validateToken(jwtToken, user);
+        if (!valid) valid = false;
+        return new ResponseEntity(valid, HttpStatus.OK);
     }
 
     private void authenticate(String email, String password) throws Exception{
