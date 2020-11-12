@@ -18,7 +18,6 @@ import java.util.Objects;
 
 @CrossOrigin
 @RestController
-@RequestMapping(value = "/authenticate")
 public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -32,7 +31,7 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
+    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody User login) throws Exception{
         authenticate(login.getEmail(), login.getPassword());
         final UserDetails userDetails = userDetailsService.loadUserByUsername(login.getEmail());
