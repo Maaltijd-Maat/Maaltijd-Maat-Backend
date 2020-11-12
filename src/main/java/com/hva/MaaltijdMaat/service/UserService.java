@@ -91,10 +91,10 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * Update the user password into the database.
+     * Update the user information into the database.
      * @param user The changed user object.
      */
-    public void updatePassword(User user){
+    public void updateUser(User user){
         userRepository.save(user);
     }
 

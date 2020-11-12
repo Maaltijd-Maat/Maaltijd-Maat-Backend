@@ -8,14 +8,11 @@ import com.hva.MaaltijdMaat.util.JwtTokenUtil;
 import com.hva.MaaltijdMaat.util.PasswordTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
 @Slf4j
@@ -55,10 +52,11 @@ public class UserController {
                     .lastname(user.getLastname())
                     .email(user.getEmail())
                     .password(passwordEncoder.encode(user.getPassword()))
-                    .Allergenen(user.getAllergenen())
+                    .allergies(user.getAllergies())
                     .avatar(user.getAvatar())
                     .guest(user.isGuest())
-                    .Allergenen(user.getAllergenen())
+                    .allergies(user.getAllergies())
+                    .diets(user.getDiets())
                     .build();
 
             userService.registerUser(_user);
@@ -73,7 +71,7 @@ public class UserController {
      * @param token JWT token.
      * @return The user if found and HTTP response status entity.
      */
-    @PostMapping(path = "/information")
+    @GetMapping(path = "/information")
     public ResponseEntity<?> getUserInformation(@RequestHeader(name = "Authorization") String token){
         //Remove the word bearer from the token.
         String jwtToken = jwtTokenUtil.refactorToken(token);
@@ -87,9 +85,11 @@ public class UserController {
                 .firstname(retrievedLogin.getFirstname())
                 .lastname(retrievedLogin.getLastname())
                 .email(retrievedLogin.getEmail())
+                .secondEmail(retrievedLogin.getSecondEmail())
                 .avatar(retrievedLogin.getAvatar())
                 .guest(retrievedLogin.isGuest())
-                .Allergenen(retrievedLogin.getAllergenen())
+                .allergies(retrievedLogin.getAllergies())
+                .diets(retrievedLogin.getDiets())
                 .build();
         return new ResponseEntity<>(responseUser, HttpStatus.OK);
     }
@@ -112,6 +112,42 @@ public class UserController {
         userService.createPasswordResetTokenForUser(user, token);
         //Email token to email address of user.
         emailService.constructResetTokenEmail(token, user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Update the user information.
+     * @param token JWT token.
+     * @param user The user with changes that are requested.
+     * @return HTTP status code.
+     */
+    @PutMapping("/update-information")
+    public ResponseEntity<?> updateUserInformation(@RequestHeader(name = "Authorization") String token, @RequestBody User user){
+        //Remove the word bearer from the token.
+        String jwtToken = jwtTokenUtil.refactorToken(token);
+        //Try to get the information by using the token.
+        User retrievedUser = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+        //Check which value to use for persisting user object.
+        String[] allergens = user.getAllergies().length > 0 ? user.getAllergies() : retrievedUser.getAllergies();
+        String[] diets = user.getDiets().length > 0 ? user.getDiets() : retrievedUser.getDiets();
+        String email = !user.getEmail().isEmpty() ? user.getEmail() : retrievedUser.getEmail();
+        String secondEmail = !user.getSecondEmail().isEmpty() ? user.getSecondEmail() : retrievedUser.getSecondEmail();
+        String firstname = !user.getFirstname().isEmpty() ? user.getFirstname() : retrievedUser.getFirstname();
+        String lastname = !user.getLastname().isEmpty() ? user.getLastname() : retrievedUser.getLastname();
+        //Create persisting user with requested changes.
+        User persistingUser = User.builder()
+                .id(retrievedUser.getId())
+                .firstname(firstname)
+                .lastname(lastname)
+                .email(email)
+                .secondEmail(secondEmail)
+                .password(retrievedUser.getPassword())
+                .avatar(retrievedUser.getAvatar())
+                .guest(retrievedUser.isGuest())
+                .allergies(allergens)
+                .diets(diets)
+                .build();
+        userService.updateUser(persistingUser);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -142,10 +178,11 @@ public class UserController {
                     .password(passwordEncoder.encode(credentials.getPassword()))
                     .avatar(retrievedUser.getAvatar())
                     .guest(retrievedUser.isGuest())
-                    .Allergenen(retrievedUser.getAllergenen())
+                    .allergies(retrievedUser.getAllergies())
+                    .diets(retrievedUser.getDiets())
                     .build();
             //Update the user into the database.
-            userService.updatePassword(user);
+            userService.updateUser(user);
             //Delete all tokens from user and all token that are expired.
             userService.deleteUserPasswordTokens(user);
             return new ResponseEntity<>(HttpStatus.OK);
