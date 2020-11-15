@@ -93,8 +93,7 @@ public class DishController {
             Optional<Dish> dishData = dishService.findDishByAuthor(id, user.getId());
 
             if (dishData.isPresent()) {
-                Dish _dish = Dish.builder()
-                        .id(id)
+                Dish _dish = dishData.get().toBuilder()
                         .name(dish.getName())
                         .amountOfPeople(dish.getAmountOfPeople())
                         .ingredients(dish.getIngredients())
