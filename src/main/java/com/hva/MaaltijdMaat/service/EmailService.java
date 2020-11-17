@@ -54,7 +54,7 @@ public class EmailService {
      * Group invitation email template
      */
     public void constructGroupInvitationEmail(Invite invite) {
-        String url = "http://localhost:4200/groups/invite/" + invite.getId();
+        String url = "http://localhost:4200/groups/invites/" + invite.getId();
         String message = String.format("%s invited you to join '%s'. Follow %s to accept the invitation.",
                 invite.getInviter().getFirstname(),
                 invite.getGroup().getName(),
