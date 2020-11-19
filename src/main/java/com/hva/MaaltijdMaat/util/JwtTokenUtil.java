@@ -28,21 +28,43 @@ public class JwtTokenUtil implements Serializable {
     @Value("${jwt.secret}")
     private String secret;
 
-    //Gets the username from the token
+    /**
+     * Gets the username from the token
+     *
+     * @param token to get the username from
+     * @return The username from the subject claim.
+     */
     public String getUsernameFromToken(String token){
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    //Retrieve expiration from the token
+    /**
+     * Retrieve expiration from the token
+     *
+     * @param token to check
+     * @return the expiration date of the delivered token.
+     */
     public Date getExpirationDateFromToken(String token){
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
+    /**
+     * Get specific claim from the token.
+     *
+     * @param token to resolve the claims from
+     * @param claimsResolver filters fot the specific claim
+     * @return the claim or payload
+     */
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver){
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
+    /**
+     * Get all claims & payload from the token.
+     * @param token to get all claims from.
+     * @return
+     */
     private Claims getAllClaimsFromToken(String token){
         try{
             return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
@@ -51,33 +73,63 @@ public class JwtTokenUtil implements Serializable {
         }
     }
 
-    //Check if token expiration date is before today
+    /**
+     * Check if token expiration date is before today
+     *
+     * @param token to check.
+     * @return true if the date is before today.
+     */
     private Boolean isTokenExpired(String token){
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    public String generateToken(UserDetails user){
+    /**
+     * Generate token with the payload(claims)
+     * @param user the user that wants to generate a JWT.
+     *
+     * @return The outcome of thedoGenerateToken function with the String token.
+     */
+    public String generateToken(User user){
         Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, user.getUsername());
+        claims.put("name", user.getFullName());
+        return doGenerateToken(claims, user);
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String subject){
+    /**
+     * Function that builds the actual token with all information.
+     *
+     * @param claims the payload and information
+     * @param user the user for the subject claim
+     * @return the generated JWT token string
+     */
+    private String doGenerateToken(Map<String, Object> claims, User user){
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject)
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
-    //Check if token is valid.
+    /**
+     * Check if token is valid.
+     *
+     * @param token to check.
+     * @param user the user to validate with.
+     * @return true if token is valid.
+     */
     public Boolean validateToken(String token, User user){
         final String username = getUsernameFromToken(token);
         return (username.equals(user.getEmail()) && !isTokenExpired(token));
     }
 
-    //Remove the Bearer word from the JWT
+    /**
+     * Remove the Bearer word from the JWT
+     *
+     * @param token to refactor with the word Bearer in it.
+     * @return The correct usable token.
+     */
     public String refactorToken(String token){
         String jwtToken = null;
         if (token != null && token.startsWith("Bearer ")){
