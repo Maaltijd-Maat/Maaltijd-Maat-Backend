@@ -63,7 +63,7 @@ public class JwtTokenUtil implements Serializable {
     /**
      * Get all claims & payload from the token.
      * @param token to get all claims from.
-     * @return
+     * @return All the claims(payload)
      */
     private Claims getAllClaimsFromToken(String token){
         try{
@@ -108,7 +108,7 @@ public class JwtTokenUtil implements Serializable {
                 .setClaims(claims)
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
