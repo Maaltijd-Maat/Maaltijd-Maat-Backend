@@ -10,8 +10,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -26,16 +24,13 @@ public class AuthenticationController {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
     private UserService userService;
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody User login) throws Exception{
         authenticate(login.getEmail(), login.getPassword());
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(login.getEmail());
-        final String token = jwtTokenUtil.generateToken(userDetails);
+        final User user = userService.getUserInformation(login.getEmail());
+        final String token = jwtTokenUtil.generateToken(user);
 
         return ResponseEntity.ok(token);
     }

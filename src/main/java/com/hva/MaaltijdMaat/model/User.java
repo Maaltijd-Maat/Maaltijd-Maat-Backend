@@ -40,6 +40,10 @@ public class User implements UserDetails {
 
     private String[] diets;
 
+    public String getFullName(){
+        return this.firstname + " " + this.getLastname();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
