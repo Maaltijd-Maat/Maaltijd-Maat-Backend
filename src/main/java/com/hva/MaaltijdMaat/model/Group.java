@@ -27,6 +27,9 @@ public class Group {
     @DBRef
     private List<User> members = new ArrayList<>();
 
+    @DBRef
+    private List<Meal> meals = new ArrayList<>();
+
     /**
      * Adds a new member to the list of members if the member is not already a member of the group.
      * @param newMember new member to be added
