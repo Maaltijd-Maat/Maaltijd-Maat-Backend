@@ -24,6 +24,9 @@ public class Meal {
     private LocalDateTime plannedFor;
 
     @DBRef
+    private Group group;
+
+    @DBRef
     private User createdBy;
 
     @DBRef
