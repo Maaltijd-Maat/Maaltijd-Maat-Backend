@@ -33,7 +33,7 @@ public class MealController {
 
     @PostMapping
     public ResponseEntity<Meal> createMeal(@RequestHeader(name = "Authorization") String token,
-                                             @RequestBody LocalDateTime plannedFor, @RequestParam String groupId) {
+                                           @RequestBody LocalDateTime plannedFor, @RequestParam String groupId) {
         try {
             String jwtToken = jwtTokenUtil.refactorToken(token);
             User creator = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
