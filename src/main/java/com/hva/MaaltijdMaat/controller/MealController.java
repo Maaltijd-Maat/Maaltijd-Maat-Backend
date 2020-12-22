@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -34,18 +33,20 @@ public class MealController {
 
     @PostMapping
     public ResponseEntity<Meal> createMeal(@RequestHeader(name = "Authorization") String token,
-                                           @RequestBody LocalDateTime plannedFor, @RequestParam String groupId) {
+                                           @RequestBody CreateMeal mealRequest) {
         try {
             String jwtToken = jwtTokenUtil.refactorToken(token);
             User creator = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
 
-            // Retrieve group and check if inviter is member of the group
-            Group group = groupService.findGroup(groupId, creator.getId());
+            // Retrieve group and check if the creator is a member of the group
+            Group group = groupService.findGroup(mealRequest.getGroupId(), creator.getId());
 
             Meal meal = Meal.builder()
                     .group(group)
                     .createdBy(creator)
-                    .plannedFor(plannedFor)
+                    .startDate(mealRequest.getStartDate())
+                    .endDate(mealRequest.getEndDate())
+                    .description(mealRequest.getDescription())
                     .build();
 
             return new ResponseEntity<>(mealService.createNewMeal(meal), HttpStatus.OK);
@@ -57,7 +58,13 @@ public class MealController {
     @GetMapping
     public ResponseEntity<List<Meal>> getMeals(@RequestHeader(name = "Authorization") String token) {
         try {
-            return null;
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            List<Group> groups = groupService.findGroups(user.getId());
+            List<Meal> meals = mealService.findMealsByGroups(groups);
+
+            return new ResponseEntity<>(meals, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

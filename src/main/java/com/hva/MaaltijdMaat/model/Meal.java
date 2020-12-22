@@ -21,7 +21,11 @@ public class Meal {
     @Id
     private String id;
 
-    private LocalDateTime plannedFor;
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
+
+    private String description;
 
     @DBRef
     private Group group;
