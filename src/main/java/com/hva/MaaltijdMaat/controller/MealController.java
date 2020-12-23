@@ -69,4 +69,21 @@ public class MealController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Meal> getMeal(
+            @RequestHeader(name = "Authorization") String token,
+            @PathVariable("id") String mealId) {
+        try {
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
+            List<Group> groups = groupService.findGroups(user.getId());
+            Meal meal = mealService.findMealByGroupAndId(mealId, groups);
+
+            return new ResponseEntity<>(meal, HttpStatus.OK);
+        } catch(Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

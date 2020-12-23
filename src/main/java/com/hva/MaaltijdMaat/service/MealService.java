@@ -3,8 +3,11 @@ package com.hva.MaaltijdMaat.service;
 import com.hva.MaaltijdMaat.model.Group;
 import com.hva.MaaltijdMaat.model.Meal;
 import com.hva.MaaltijdMaat.repository.MealRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -13,12 +16,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class MealService {
-    private final MongoTemplate mongoTemplate;
     private final MealRepository mealRepository;
 
     @Autowired
-    public MealService(MongoTemplate mongoTemplate, MealRepository mealRepository) {
-        this.mongoTemplate = mongoTemplate;
+    public MealService(MealRepository mealRepository) {
         this.mealRepository = mealRepository;
     }
 
@@ -36,9 +37,13 @@ public class MealService {
      * Finds an already existing meal.
      *
      * @param mealId id of the requested meal
+     * @param groups the groups where the user is part of to check if the user is permitted to see the meal.
      * @return meal
      */
-    public Meal findMeal(String mealId) { return null;}
+    public Meal findMealByGroupAndId(String mealId, Collection<Group> groups) {
+        List<String> groupIds = groups.stream().map(Group::getId).collect(Collectors.toList());
+        return this.mealRepository.findMealByGroupInAndId(groupIds, mealId);
+    }
 
     /**
      * Finds all meals by groups.
