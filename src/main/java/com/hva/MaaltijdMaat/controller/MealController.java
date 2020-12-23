@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Slf4j
@@ -45,8 +47,8 @@ public class MealController {
                     .title(mealRequest.getTitle())
                     .group(group)
                     .createdBy(creator)
-                    .start(mealRequest.getStart())
-                    .end(mealRequest.getEnd())
+                    .start(ZonedDateTime.of(mealRequest.getStart(), ZoneId.systemDefault()))
+                    .end(ZonedDateTime.of(mealRequest.getEnd(), ZoneId.systemDefault()))
                     .description(mealRequest.getDescription())
                     .build();
 

@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Document
@@ -23,9 +24,9 @@ public class Meal {
 
     private String title;
 
-    private LocalDateTime start;
+    private ZonedDateTime start;
 
-    private LocalDateTime end;
+    private ZonedDateTime end;
 
     private String description;
 
