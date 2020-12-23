@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CreateMeal {
     final String groupId;
-    final LocalDateTime startDate;
-    final LocalDateTime endDate;
+    final String title;
+    final LocalDateTime start;
+    final LocalDateTime end;
     final String description;
 }

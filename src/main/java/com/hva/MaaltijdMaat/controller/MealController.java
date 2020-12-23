@@ -42,10 +42,11 @@ public class MealController {
             Group group = groupService.findGroup(mealRequest.getGroupId(), creator.getId());
 
             Meal meal = Meal.builder()
+                    .title(mealRequest.getTitle())
                     .group(group)
                     .createdBy(creator)
-                    .startDate(mealRequest.getStartDate())
-                    .endDate(mealRequest.getEndDate())
+                    .start(mealRequest.getStart())
+                    .end(mealRequest.getEnd())
                     .description(mealRequest.getDescription())
                     .build();
 

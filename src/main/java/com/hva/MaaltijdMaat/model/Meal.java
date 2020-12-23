@@ -21,9 +21,11 @@ public class Meal {
     @Id
     private String id;
 
-    private LocalDateTime startDate;
+    private String title;
 
-    private LocalDateTime endDate;
+    private LocalDateTime start;
+
+    private LocalDateTime end;
 
     private String description;
 
