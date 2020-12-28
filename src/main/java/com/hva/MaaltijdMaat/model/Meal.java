@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Document
@@ -24,9 +24,11 @@ public class Meal {
     @Id
     private String id;
 
-    private LocalDateTime startDate;
+    private String title;
 
-    private LocalDateTime endDate;
+    private ZonedDateTime start;
+
+    private ZonedDateTime end;
 
     private String description;
 
