@@ -21,4 +21,6 @@ public interface DishRepository extends MongoRepository<Dish, String> {
      * @return Optional Dish
      */
     Optional<Dish> findDishByIdAndAuthor_Id(String id, String authorId);
+
+    Dish findDishById(String id);
 }
