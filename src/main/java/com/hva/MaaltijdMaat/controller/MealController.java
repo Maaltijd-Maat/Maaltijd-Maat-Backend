@@ -126,8 +126,8 @@ public class MealController {
                     .createdBy(meal.getCreatedBy())
                     .description(meal.getDescription())
                     .group(meal.getGroup())
-                    .endDate(meal.getEndDate())
-                    .startDate(meal.getStartDate())
+                    .end(meal.getEnd())
+                    .start(meal.getStart())
                     .suggestions(meal.getSuggestions())
                     .build();
             mealService.updateMeal(persistingMeal);
