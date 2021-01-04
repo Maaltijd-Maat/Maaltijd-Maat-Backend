@@ -41,7 +41,7 @@ public class MealController {
     }
 
     @PostMapping
-    public ResponseEntity<Meal> createMeal(@RequestHeader(name = "Authorization") String token,
+    public ResponseEntity<Object> createMeal(@RequestHeader(name = "Authorization") String token,
                                            @RequestBody CreateMeal mealRequest) {
         try {
             String jwtToken = jwtTokenUtil.refactorToken(token);
@@ -49,6 +49,11 @@ public class MealController {
 
             // Retrieve group and check if the creator is a member of the group
             Group group = groupService.findGroup(mealRequest.getGroupId(), creator.getId());
+
+            // Check if the end date is after the start date
+            if (mealRequest.getEnd().isBefore(mealRequest.getStart())) {
+                return new ResponseEntity<>("End date is before start date", HttpStatus.BAD_REQUEST);
+            }
 
             Meal meal = Meal.builder()
                     .title(mealRequest.getTitle())
