@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hva.MaaltijdMaat.util.ColorUtil.hashToHex;
+import static com.hva.MaaltijdMaat.util.ColorUtil.randomColor;
 
 @Slf4j
 @RestController
@@ -72,11 +72,9 @@ public class GroupController {
             List<User> members = new ArrayList<>();
             members.add(creator);
 
-            String color = hashToHex(groupName.hashCode());
-
             Group group = Group.builder()
                     .name(groupName)
-                    .color(color)
+                    .color(randomColor())
                     .owner(creator)
                     .members(members)
                     .build();

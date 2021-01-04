@@ -3,17 +3,16 @@ package com.hva.MaaltijdMaat.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Random;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ColorUtil {
+    private static final Random random = new Random();
     /**
      * Generates a hex color code from a hashcode
-     *
-     * @param hash hashcode as int
      * @return color code as String (#9A55F9)
      */
-    public static String hashToHex(int hash) {
-        return ("#" + Integer.toHexString(((hash >> 16) & 0xFF)) +
-                Integer.toHexString(((hash >> 8) & 0xFF)) +
-                Integer.toHexString((hash & 0xFF))).toUpperCase();
+    public static String randomColor() {
+        return String.format("#%06x", random.nextInt(0xffffff + 1));
     }
 }
