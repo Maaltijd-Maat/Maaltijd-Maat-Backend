@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.hva.MaaltijdMaat.util.ColorUtil.intToARGB;
+
 @Slf4j
 @RestController
 @RequestMapping("/group")
@@ -70,13 +72,16 @@ public class GroupController {
             List<User> members = new ArrayList<>();
             members.add(creator);
 
-            Group _group = Group.builder()
+            String color = intToARGB(groupName.hashCode());
+
+            Group group = Group.builder()
                     .name(groupName)
+                    .color(color)
                     .owner(creator)
                     .members(members)
                     .build();
 
-            return new ResponseEntity<>(groupService.createGroup(_group), HttpStatus.CREATED);
+            return new ResponseEntity<>(groupService.createGroup(group), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
