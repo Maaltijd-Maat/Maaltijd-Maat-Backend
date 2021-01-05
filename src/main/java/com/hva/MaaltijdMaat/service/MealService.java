@@ -1,16 +1,13 @@
 package com.hva.MaaltijdMaat.service;
 
+import com.hva.MaaltijdMaat.model.Attendee;
 import com.hva.MaaltijdMaat.model.Group;
 import com.hva.MaaltijdMaat.model.Meal;
 import com.hva.MaaltijdMaat.model.Suggestion;
-import com.hva.MaaltijdMaat.model.User;
+import com.hva.MaaltijdMaat.repository.AttendeeRepository;
 import com.hva.MaaltijdMaat.repository.MealRepository;
 import com.hva.MaaltijdMaat.repository.SuggestRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -21,11 +18,13 @@ import java.util.stream.Collectors;
 public class MealService {
     private final MealRepository mealRepository;
     private final SuggestRepository suggestRepository;
+    private final AttendeeRepository attendeeRepository;
 
     @Autowired
-    public MealService(MealRepository mealRepository, SuggestRepository suggestRepository) {
+    public MealService(MealRepository mealRepository, SuggestRepository suggestRepository, AttendeeRepository attendeeRepository) {
         this.mealRepository = mealRepository;
         this.suggestRepository = suggestRepository;
+        this.attendeeRepository = attendeeRepository;
     }
 
     /**
@@ -78,5 +77,9 @@ public class MealService {
      */
     public Suggestion createSuggestion(Suggestion suggestion){
         return suggestRepository.insert(suggestion);
+    }
+
+    public void setAttendee(Attendee attendee){
+        attendeeRepository.save(attendee);
     }
 }

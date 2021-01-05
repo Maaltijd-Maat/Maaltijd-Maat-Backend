@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -62,6 +65,8 @@ public class MealController {
                     .start(ZonedDateTime.of(mealRequest.getStart(), ZoneId.systemDefault()))
                     .end(ZonedDateTime.of(mealRequest.getEnd(), ZoneId.systemDefault()))
                     .description(mealRequest.getDescription())
+                    .suggestions(new ArrayList<>())
+                    .attendees(new ArrayList<>())
                     .build();
 
             return new ResponseEntity<>(mealService.createNewMeal(meal), HttpStatus.OK);
@@ -123,9 +128,30 @@ public class MealController {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateMeal(@RequestBody Meal meal){
+    @PutMapping("/attendee")
+    public ResponseEntity<?> setAttendee(@RequestHeader(name = "Authorization") String token, @RequestBody Attendee attendee){
         try {
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+            Attendee persistingAttendee = Attendee.builder()
+                    .status(attendee.getStatus())
+                    .meal(attendee.getMeal())
+                    .attendee(user)
+                    .build();
+            mealService.setAttendee(persistingAttendee);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateMeal(@RequestHeader(name = "Authorization") String token, @RequestBody Meal meal){
+        try {
+            String jwtToken = jwtTokenUtil.refactorToken(token);
+            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
+
             Meal persistingMeal = Meal.builder()
                     .id(meal.getId())
                     .createdBy(meal.getCreatedBy())
@@ -134,6 +160,7 @@ public class MealController {
                     .end(meal.getEnd())
                     .start(meal.getStart())
                     .suggestions(meal.getSuggestions())
+                    .attendees(meal.getAttendees())
                     .build();
             mealService.updateMeal(persistingMeal);
 

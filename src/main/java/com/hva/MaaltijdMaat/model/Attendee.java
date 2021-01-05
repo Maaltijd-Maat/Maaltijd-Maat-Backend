@@ -8,36 +8,20 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-
 @Document
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Meal {
-
+public class Attendee {
     @Id
     private String id;
 
-    private String title;
-
-    private ZonedDateTime start;
-
-    private ZonedDateTime end;
-
-    private String description;
+    private String status;
 
     @DBRef
-    private Group group;
+    private Meal meal;
 
     @DBRef
-    private User createdBy;
-
-    @DBRef
-    private List<Suggestion> suggestions;
-
-    @DBRef
-    private List<Attendee> attendees;
+    private User attendee;
 }
