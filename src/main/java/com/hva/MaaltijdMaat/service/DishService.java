@@ -25,6 +25,8 @@ public class DishService {
         return dishRepository.findDishByIdAndAuthor_Id(id, userId);
     }
 
+    public Dish findDishById(String id){return dishRepository.findDishById(id);}
+
     public void createDish(Dish dish) {
         this.dishRepository.insert(dish);
     }

@@ -21,14 +21,20 @@ public class Group {
 
     private String name;
 
+    private String color;
+
     @DBRef
     private User owner;
 
     @DBRef
     private List<User> members = new ArrayList<>();
 
+    @DBRef
+    private List<Meal> meals = new ArrayList<>();
+
     /**
      * Adds a new member to the list of members if the member is not already a member of the group.
+     *
      * @param newMember new member to be added
      * @return true if member is added; false if member is not added
      */

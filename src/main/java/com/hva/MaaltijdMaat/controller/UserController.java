@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+import static com.hva.MaaltijdMaat.util.ColorUtil.randomColor;
+
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -50,6 +52,7 @@ public class UserController {
             User _user = User.builder()
                     .firstname(user.getFirstname())
                     .lastname(user.getLastname())
+                    .color(randomColor())
                     .email(user.getEmail())
                     .password(passwordEncoder.encode(user.getPassword()))
                     .allergies(user.getAllergies())
