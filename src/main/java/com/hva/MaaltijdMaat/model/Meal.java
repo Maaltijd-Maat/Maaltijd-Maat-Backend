@@ -37,7 +37,4 @@ public class Meal {
 
     @DBRef
     private List<Suggestion> suggestions;
-
-    @DBRef
-    private List<Attendee> attendees;
 }

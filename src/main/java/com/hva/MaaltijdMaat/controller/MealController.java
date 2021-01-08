@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -58,6 +56,7 @@ public class MealController {
                 return new ResponseEntity<>("End date is before start date", HttpStatus.BAD_REQUEST);
             }
 
+            //Create new meal object
             Meal meal = Meal.builder()
                     .title(mealRequest.getTitle())
                     .group(group)
@@ -66,10 +65,19 @@ public class MealController {
                     .end(ZonedDateTime.of(mealRequest.getEnd(), ZoneId.systemDefault()))
                     .description(mealRequest.getDescription())
                     .suggestions(new ArrayList<>())
-                    .attendees(new ArrayList<>())
                     .build();
 
-            return new ResponseEntity<>(mealService.createNewMeal(meal), HttpStatus.OK);
+            //Inserted meal that we have to use for new attendee object
+            Meal insertedMeal = mealService.createNewMeal(meal);
+
+            //create new attendees for meal with default availability
+            try{
+                mealService.createAttendees(insertedMeal);
+            }catch (Exception e){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            return new ResponseEntity<>(insertedMeal, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -106,6 +114,7 @@ public class MealController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
     @PostMapping("/suggestion")
     public ResponseEntity<?> createSuggestion(
             @RequestHeader(name = "Authorization") String token,
@@ -129,17 +138,31 @@ public class MealController {
     }
 
     @PutMapping("/attendee")
-    public ResponseEntity<?> setAttendee(@RequestHeader(name = "Authorization") String token, @RequestBody Attendee attendee){
+    public ResponseEntity<?> createOrUpdateAttendee(@RequestHeader(name = "Authorization") String token, @RequestBody Attendee attendee){
         try {
             String jwtToken = jwtTokenUtil.refactorToken(token);
             User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
-            Attendee persistingAttendee = Attendee.builder()
-                    .status(attendee.getStatus())
-                    .meal(attendee.getMeal())
-                    .attendee(user)
-                    .build();
-            mealService.setAttendee(persistingAttendee);
 
+            //Check if attendee already exists
+            Attendee existingAttendee = mealService.getAttendeeByUserAndMeal(user, attendee.getMeal());
+            if(existingAttendee != null) {
+                //Update existing attendee
+                attendee = Attendee.builder()
+                        .id(existingAttendee.getId())
+                        .status(attendee.getStatus())
+                        .meal(attendee.getMeal())
+                        .attendee(user)
+                        .build();
+            }else{
+                //Insert new attendee
+                attendee = Attendee.builder()
+                        .status(attendee.getStatus())
+                        .meal(attendee.getMeal())
+                        .attendee(user)
+                        .build();
+            }
+
+            mealService.createOrUpdateAttendee(attendee);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -147,11 +170,8 @@ public class MealController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateMeal(@RequestHeader(name = "Authorization") String token, @RequestBody Meal meal){
+    public ResponseEntity<?> updateMeal(@RequestBody Meal meal){
         try {
-            String jwtToken = jwtTokenUtil.refactorToken(token);
-            User user = userService.getUserInformation(jwtTokenUtil.getUsernameFromToken(jwtToken));
-
             Meal persistingMeal = Meal.builder()
                     .id(meal.getId())
                     .createdBy(meal.getCreatedBy())
@@ -160,12 +180,21 @@ public class MealController {
                     .end(meal.getEnd())
                     .start(meal.getStart())
                     .suggestions(meal.getSuggestions())
-                    .attendees(meal.getAttendees())
                     .build();
             mealService.updateMeal(persistingMeal);
 
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/attendee/{id}")
+    public ResponseEntity<List<Attendee>> getAttendees(@PathVariable("id") String mealId) {
+        try {
+            List<Attendee> attendees = mealService.getAttendeesByMealId(mealId);
+            return new ResponseEntity<>(attendees, HttpStatus.OK);
+        } catch(Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

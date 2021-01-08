@@ -1,15 +1,13 @@
 package com.hva.MaaltijdMaat.service;
 
-import com.hva.MaaltijdMaat.model.Attendee;
-import com.hva.MaaltijdMaat.model.Group;
-import com.hva.MaaltijdMaat.model.Meal;
-import com.hva.MaaltijdMaat.model.Suggestion;
+import com.hva.MaaltijdMaat.model.*;
 import com.hva.MaaltijdMaat.repository.AttendeeRepository;
 import com.hva.MaaltijdMaat.repository.MealRepository;
 import com.hva.MaaltijdMaat.repository.SuggestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,13 +71,54 @@ public class MealService {
      * Create a suggestion and add it to the database.
      *
      * @param suggestion the suggestion object.
-     * @return the persisted suggestion.
      */
-    public Suggestion createSuggestion(Suggestion suggestion){
-        return suggestRepository.insert(suggestion);
+    public void createSuggestion(Suggestion suggestion){
+        suggestRepository.insert(suggestion);
     }
 
-    public void setAttendee(Attendee attendee){
+    /**
+     * Create new Attendee
+     *
+     * @param attendee object with the status and references to user and meal
+     */
+    public void createOrUpdateAttendee(Attendee attendee){
         attendeeRepository.save(attendee);
+    }
+
+    /**
+     * Get single attendee by User.
+     *
+     * @return Attendee if exists.
+     */
+    public Attendee getAttendeeByUserAndMeal(User user, Meal meal){
+        return attendeeRepository.findAttendeeByAttendeeAndMeal(user, meal);
+    }
+
+    /**
+     * Get a list of all group members that had given their status for the meal.
+     *
+     * @param mealId object used for searching in the attendee DB.
+     * @return A list of attendees that had given their availability.
+     */
+    public List<Attendee> getAttendeesByMealId(String mealId){
+        return attendeeRepository.findAttendeesByMealId(mealId);
+    }
+
+    /**
+     * Initialize and create all the group members as attendees with no status
+     *
+     * @param insertedMeal the meal where the attendees could attend.
+     */
+    public void createAttendees(Meal insertedMeal) {
+        List<Attendee> attendees = new ArrayList<>();
+            for (User member : insertedMeal.getGroup().getMembers()){
+                Attendee attendee = Attendee.builder()
+                        .status("Not given availability yet.")
+                        .attendee(member)
+                        .meal(insertedMeal)
+                        .build();
+                attendees.add(attendee);
+            }
+        attendeeRepository.saveAll(attendees);
     }
 }
