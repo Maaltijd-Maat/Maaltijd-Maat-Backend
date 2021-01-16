@@ -27,5 +27,4 @@ public class Dish {
 
     private String[] instructions;
 
-    private Ingredient[] ingredients;
 }
