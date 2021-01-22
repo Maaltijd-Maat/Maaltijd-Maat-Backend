@@ -42,8 +42,6 @@ public class DishController {
                     .name(dish.getName())
                     .author(user)
                     .amountOfPeople(dish.getAmountOfPeople())
-                    .ingredients(dish.getIngredients())
-                    .instructions(dish.getInstructions())
                     .build();
 
             dishService.createDish(_dish);
@@ -96,8 +94,6 @@ public class DishController {
                 Dish _dish = dishData.get().toBuilder()
                         .name(dish.getName())
                         .amountOfPeople(dish.getAmountOfPeople())
-                        .ingredients(dish.getIngredients())
-                        .instructions(dish.getInstructions())
                         .build();
 
                 dishService.updateDish(_dish);
